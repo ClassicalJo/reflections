@@ -10,8 +10,8 @@ export const Reflections = canvas => {
     grad.addColorStop(0, 'yellow')
     grad.addColorStop(0.5, 'orange')
     
-    const CLOUD = new Image()
-    CLOUD.src = "/images/cloud.png"
+    const CLOUD = document.querySelector("#cloud")
+
     return ({
         bodies: [
             new Cloud({ x: 100, y: 100 }, CLOUD, 1),
