@@ -1,49 +1,56 @@
 export class Water {
     constructor(originCanvas) {
         this.origin = originCanvas
-        this.mapTarget = this.makeMapTarget()
-        this.turbulence = kampos.effects.turbulence({
+        this.lifetime = 0
+        this.mapTarget = this.createCanvas()
+        this.turbulence = this.setTurbulence()
+        this.dissolveMap = this.setDissolveMap()
+    
+        this.target = this.createCanvas()
+        this.displacement = this.setDisplacement()        
+        this.animation = this.setAnimation() 
+    }
+    setTurbulence(){
+        return kampos.effects.turbulence({
             noise: kampos.noise.perlinNoise,
-            frequency: { x: 0.05, y: 1 },
-            octaves: 3,
+            frequency: { x: 0.025, y: 1 },
+            octaves: 1,
             isFractal: true,
         })
-        this.dissolveMap = new kampos.Kampos({
+    }
+    setDissolveMap(){
+        let dissolveMap = new kampos.Kampos({
             target: this.mapTarget,
             effects: [this.turbulence],
             noSource: true
         });
-        this.dissolveMap.draw();
-
-        this.dissolve = kampos.transitions.dissolve();
-        this.dissolve.map = this.mapTarget;
-        this.dissolve.high = 0.03;
-
-        this.displacement = kampos.transitions.displacement()
-        this.displacement.map = this.mapTarget;
-        this.displacement.sourceScale = { x: 0.025 }
-        this.displacement.toScale = { x: 0.05 }
-
-        this.target = this.makeMapTarget()
-        this.anotherTarget = this.makeMapTarget()
-
-        this.animation = new kampos.Kampos({
+        dissolveMap.play(time => this.turbulence.time = time * 10)
+        return dissolveMap
+    }
+    setDisplacement() {
+        let displacement = kampos.effects.displacement()
+        displacement.map = this.mapTarget
+        displacement.scale = { x: 0.05, y: 0 }
+        displacement.textures[0].update = true
+        return displacement
+    }
+    setAnimation(){
+        let animation = new kampos.Kampos({
             target: this.target, effects: [this.displacement]
         });
-
-        this.animation.setSource({
+        animation.setSource({
             media: this.origin,
             width: this.origin.width,
             height: this.origin.height
         })
-        this.displacement.to = this.anotherTarget
-        this.animation.play(time => {
-            this.displacement.progress = 0.18
-        })
-
-
+        return animation
     }
-    makeMapTarget() {
+    update() {
+        this.lifetime++
+        this.animation.draw(this.lifetime)
+    }
+    
+    createCanvas() {
         let canvas = document.createElement('canvas')
         let { width, height } = this.origin
         canvas.width = width
@@ -51,3 +58,4 @@ export class Water {
         return canvas
     }
 }
+
