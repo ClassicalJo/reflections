@@ -4,37 +4,49 @@ import { Water } from './Water.js'
 export const Reflections = canvas => {
     let ctx = canvas.getContext('2d')
     let water = new Water(canvas)
+    let [WIDTH, HEIGHT, H2] = [canvas.width, canvas.height, canvas.height / 2]
+    let grad = ctx.createLinearGradient(0, 0, 0, canvas.height)
+    grad.addColorStop(0, 'yellow')
+    grad.addColorStop(0.5, 'orange')
     return ({
-        bodies: Array(100).fill("").map(() => new Rect(canvas.width, canvas.height)),
+        bodies: [...Array(100).fill("").map(() => new Rect(WIDTH, HEIGHT))],
         update: function () {
             this.bodies.forEach(k => k.update())
         },
-        reflect: function () {
+        ripples: function () {
+            water.update()
+            ctx.drawImage(water.target, 0, H2, WIDTH, H2, 0, H2, WIDTH, H2)
+        },
+        sunset: function () {
+            ctx.fillStyle = grad
+            ctx.fillRect(0, 0, WIDTH, H2)
+        },
+        generateReflection: function () {
             let memCanvas = document.createElement('canvas')
-            memCanvas.width = canvas.width
-            memCanvas.height = canvas.height
+            memCanvas.width = WIDTH
+            memCanvas.height = HEIGHT
             let memCtx = memCanvas.getContext('2d')
-            memCtx.setTransform(1, 0, 0, -1, 0, canvas.height)
-            memCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height / 2, 0, 0, canvas.width, canvas.height / 2)
+            memCtx.save()
+            memCtx.setTransform(1, 0, 0, -1, 0, HEIGHT)
+            memCtx.drawImage(canvas, 0, 0, WIDTH, H2, 0, 0, WIDTH, H2)
+            memCtx.restore()
             return memCanvas
         },
-        drawWater: function () {
-            //get the temporary canvas
-            let memCanvas = this.reflect()
-            //Clear non reflected items
-            ctx.clearRect(0, canvas.height / 2, canvas.width, canvas.height / 2)
-            //Paint it blue
-            ctx.fillStyle = "rgba(0,0,255,0.01)"
-            ctx.fillRect(0, canvas.height / 2, canvas.width, canvas.height / 2)
-            //Paint the reflections
-            ctx.drawImage(memCanvas, 0, canvas.height / 2, canvas.width, canvas.height / 2, 0, canvas.height / 2, canvas.width, canvas.height / 2)
-            //Paint the wave effect
-            ctx.drawImage(water.target, 0, canvas.height / 2, canvas.width, canvas.height / 2, 0, canvas.height / 2, canvas.width, canvas.height / 2)
+        paintPool: function (color) {
+            ctx.fillStyle = color
+            ctx.fillRect(0, H2, WIDTH, H2)
+        },
+        paintReflection: function (canvas) {
+            this.paintPool("white")
+            ctx.drawImage(canvas, 0, H2, WIDTH, H2, 0, H2, WIDTH, H2)
         },
         render: function () {
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.clearRect(0, 0, WIDTH, HEIGHT)
+            this.sunset()
             this.bodies.forEach(k => k.render(ctx))
-            this.drawWater()
+            this.paintReflection(this.generateReflection())
+            this.paintPool("rgba(0,125,50,0.3)")
+            this.ripples()
         }
     })
 }
