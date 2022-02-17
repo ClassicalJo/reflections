@@ -1,15 +1,23 @@
-import { Rect } from './Rect.js'
+import { Cloud } from './Cloud.js'
 import { Water } from './Water.js'
+const CLOUD = new Image()
+CLOUD.src = "../images/cloud.png"
 
 export const Reflections = canvas => {
     let ctx = canvas.getContext('2d')
     let water = new Water(canvas)
-    let [WIDTH, HEIGHT, H2] = [canvas.width, canvas.height, canvas.height / 2]
+    let [WIDTH, HEIGHT, W2, H2] = [canvas.width, canvas.height, canvas.width / 2, canvas.height / 2]
     let grad = ctx.createLinearGradient(0, 0, 0, canvas.height)
     grad.addColorStop(0, 'yellow')
     grad.addColorStop(0.5, 'orange')
     return ({
-        bodies: [...Array(100).fill("").map(() => new Rect(WIDTH, HEIGHT))],
+        bodies: [
+            new Cloud({ x: 100, y: 100 }, CLOUD, 1),
+            new Cloud({ x: 500, y: 150 }, CLOUD,1.5),
+            new Cloud({ x: 350, y: 130 }, CLOUD,1.2),
+            new Cloud({ x: 50, y: 325 }, CLOUD,2),
+            new Cloud({ x: 450, y: 300 }, CLOUD,2),
+        ],
         update: function () {
             this.bodies.forEach(k => k.update())
         },
@@ -20,6 +28,9 @@ export const Reflections = canvas => {
         sunset: function () {
             ctx.fillStyle = grad
             ctx.fillRect(0, 0, WIDTH, H2)
+            ctx.fillStyle = "hsl(58,100%,92%)"
+            ctx.arc(W2, H2 + 25, 100, 0, Math.PI * 2)
+            ctx.fill()
         },
         generateReflection: function () {
             let memCanvas = document.createElement('canvas')
