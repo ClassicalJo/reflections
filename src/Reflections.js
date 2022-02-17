@@ -1,7 +1,6 @@
 import { Cloud } from './Cloud.js'
 import { Water } from './Water.js'
-const CLOUD = new Image()
-CLOUD.src = "../images/cloud.png"
+
 
 export const Reflections = canvas => {
     let ctx = canvas.getContext('2d')
@@ -10,13 +9,16 @@ export const Reflections = canvas => {
     let grad = ctx.createLinearGradient(0, 0, 0, canvas.height)
     grad.addColorStop(0, 'yellow')
     grad.addColorStop(0.5, 'orange')
+    
+    const CLOUD = new Image()
+    CLOUD.src = "/images/cloud.png"
     return ({
         bodies: [
             new Cloud({ x: 100, y: 100 }, CLOUD, 1),
-            new Cloud({ x: 500, y: 150 }, CLOUD,1.5),
-            new Cloud({ x: 350, y: 130 }, CLOUD,1.2),
-            new Cloud({ x: 50, y: 325 }, CLOUD,2),
-            new Cloud({ x: 450, y: 300 }, CLOUD,2),
+            new Cloud({ x: 500, y: 150 }, CLOUD, 1.5),
+            new Cloud({ x: 350, y: 130 }, CLOUD, 1.2),
+            new Cloud({ x: 50, y: 325 }, CLOUD, 2),
+            new Cloud({ x: 450, y: 300 }, CLOUD, 2),
         ],
         update: function () {
             this.bodies.forEach(k => k.update())
