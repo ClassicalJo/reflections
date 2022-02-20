@@ -8,7 +8,7 @@ export const Reflections = canvas => {
     let [WIDTH, HEIGHT, W2, H2] = [canvas.width, canvas.height, canvas.width / 2, canvas.height / 2]
     let grad = ctx.createLinearGradient(0, 0, 0, canvas.height)
     grad.addColorStop(0, 'orange')
-    grad.addColorStop(0.5, 'yellow')
+    grad.addColorStop(0.5, 'hsl(21, 52%, 38%)')
     
     
     const CLOUD = document.querySelector("#cloud")
