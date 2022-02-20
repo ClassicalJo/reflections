@@ -47,6 +47,7 @@ export class Water {
     }
     update() {
         this.lifetime++
+        if(this.lifetime > 100) this.lifetime = 0
         this.animation.draw(this.lifetime)
     }
     
